@@ -6,6 +6,9 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import RecommendationDetailsPage from './pages/RecommendationDetailsPage';
+import HomePage from './pages/HomePage';
+import Navbar from './components/NavBar'; 
+import Footer from './components/Footer';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoadingSpinner from './components/LoadingSpinner';
 
@@ -14,7 +17,6 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    // Affiche un spinner de chargement tant que l'état d'authentification est en cours de vérification
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <LoadingSpinner />
@@ -24,7 +26,6 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   }
 
   if (!isAuthenticated) {
-    // Redirige vers la page de connexion si non authentifié
     return <Navigate to="/login" replace />;
   }
 
@@ -33,38 +34,37 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 const App: React.FC = () => {
   return (
-    // Le Router doit être le composant parent pour que useNavigate fonctionne partout en dessous
     <Router>
-      {/* AuthProvider doit maintenant envelopper les Routes À L'INTÉRIEUR du Router */}
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/recommendations/:cvId"
-            element={
-              <ProtectedRoute>
-                <RecommendationDetailsPage />
-              </ProtectedRoute>
-            }
-          />
-          {/* Redirection par défaut vers le tableau de bord si authentifié, sinon vers la page de connexion */}
-          <Route
-            path="/"
-            element={
-              <HomeRedirect />
-            }
-          />
-          <Route path="*" element={<NotFound />} /> {/* Route 404 */}
-        </Routes>
+        <div className="flex flex-col min-h-screen"> {/* Conteneur principal pour le layout */}
+          <Navbar /> {/* La Navbar sera visible sur toutes les pages */}
+          <main className="flex-grow"> {/* Le contenu des pages prendra l'espace restant */}
+            <Routes>
+              <Route path="/" element={<HomeRedirect />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/recommendations/:cvId"
+                element={
+                  <ProtectedRoute>
+                    <RecommendationDetailsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Footer /> {/* Le Footer sera visible sur toutes les pages */}
+        </div>
       </AuthProvider>
     </Router>
   );
@@ -75,7 +75,6 @@ const HomeRedirect: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    // Affiche un spinner de chargement tant que l'état d'authentification est en cours de vérification
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <LoadingSpinner />
@@ -84,7 +83,7 @@ const HomeRedirect: React.FC = () => {
     );
   }
 
-  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/home" replace />;
 };
 
 const NotFound: React.FC = () => {
@@ -96,6 +95,5 @@ const NotFound: React.FC = () => {
     </div>
   );
 };
-
 
 export default App;

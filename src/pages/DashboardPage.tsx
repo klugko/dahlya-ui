@@ -43,7 +43,7 @@ const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8 flex flex-col items-center">
+    <div className="min-h-screen bg-gray-100 p-15 flex flex-col items-center">
       <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-xl">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-extrabold text-blue-700">Tableau de Bord</h1>
